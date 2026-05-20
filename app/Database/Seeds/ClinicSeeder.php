@@ -17,14 +17,6 @@ class ClinicSeeder extends Seeder
         ];
         $this->db->table('ROLE')->insertBatch($roleData);
 
-        // 2. Isi Tabel JENIS_ITEM (Statis - ID ditentukan manual)
-        $jenisItemData = [
-            ['ID_JENIS_ITEM' => 1, 'NAMA_JENIS_ITEM' => 'Konsultasi Dokter'],
-            ['ID_JENIS_ITEM' => 2, 'NAMA_JENIS_ITEM' => 'Tindakan Medis'],
-            ['ID_JENIS_ITEM' => 3, 'NAMA_JENIS_ITEM' => 'Obat / Farmasi'],
-        ];
-        $this->db->table('JENIS_ITEM')->insertBatch($jenisItemData);
-
         // 3. Isi Tabel METODE_BAYAR (Statis - ID ditentukan manual)
         $metodeBayarData = [
             ['ID_METODE_BAYAR' => 1, 'NAMA_METODE_BAYAR' => 'Tunai'],

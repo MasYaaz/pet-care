@@ -73,13 +73,17 @@
             <?php endif; ?>
 
             <?php if (session()->get('id_role') == 1): ?>
-                <a href="#"
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-4 mt-6 mb-2">Pemeriksaan Medis
+                </p>
+
+                <a href="<?= base_url('dokter/ruang-tunggu') ?>"
                     class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-all">
                     <i data-lucide="stethoscope" class="w-4 h-4"></i> Ruang Tunggu Medis
                 </a>
-                <a href="#"
+
+                <a href="<?= base_url('dokter/jadwal') ?>"
                     class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-all">
-                    <i data-lucide="clipboard-list" class="w-4 h-4"></i> Input Rekam Medis
+                    <i data-lucide="calendar-days" class="w-4 h-4"></i> Atur Jadwal Praktik
                 </a>
             <?php endif; ?>
 

@@ -82,7 +82,7 @@ class CreateClinicTables extends Migration
         // 7. Table: RESERVASI (Auto Increment)
         $this->forge->addField([
             'ID_RESERVASI' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true, 'null' => false],
-            'ID_PARAMEDIS' => ['type' => 'INT', 'constraint' => 11, 'null' => false],
+            'ID_PARAMEDIS' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
             'ID_PASIEN' => ['type' => 'INT', 'constraint' => 11, 'null' => false],
             'ID_JADWAL' => ['type' => 'INT', 'constraint' => 11, 'null' => false],
             'CREATED_AT' => ['type' => 'TIMESTAMP', 'null' => true],
@@ -174,25 +174,6 @@ class CreateClinicTables extends Migration
         $this->forge->addForeignKey('ID_OBAT', 'OBAT', 'ID_OBAT', 'RESTRICT', 'RESTRICT');
         $this->forge->createTable('DETAIL_RESEP', true);
 
-        // 14. Table: ITEM_TAGIHAN (Auto Increment)
-        $this->forge->addField([
-            'ID_ITEM_TAGIHAN' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true, 'null' => false],
-            'KETERANGAN' => ['type' => 'VARCHAR', 'constraint' => 60, 'null' => true],
-            'JUMLAH_TAGIHAN' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
-            'HARGA_SATUAN_TAGIHAN' => ['type' => 'FLOAT', 'constraint' => '8,2', 'null' => true],
-            'SUBTOTAL' => ['type' => 'FLOAT', 'constraint' => '8,2', 'null' => true],
-        ]);
-        $this->forge->addKey('ID_ITEM_TAGIHAN', true);
-        $this->forge->createTable('ITEM_TAGIHAN', true);
-
-        // 15. Table: JENIS_ITEM (Statis - Tidak Menggunakan Auto Increment)
-        $this->forge->addField([
-            'ID_JENIS_ITEM' => ['type' => 'INT', 'constraint' => 11, 'null' => false],
-            'NAMA_JENIS_ITEM' => ['type' => 'VARCHAR', 'constraint' => 60, 'null' => true],
-        ]);
-        $this->forge->addKey('ID_JENIS_ITEM', true);
-        $this->forge->createTable('JENIS_ITEM', true);
-
         // 16. Table: METODE_BAYAR (Statis - Tidak Menggunakan Auto Increment)
         $this->forge->addField([
             'ID_METODE_BAYAR' => ['type' => 'INT', 'constraint' => 11, 'null' => false],
@@ -204,10 +185,8 @@ class CreateClinicTables extends Migration
         // 17. Table: PEMBAYARAN (Auto Increment)
         $this->forge->addField([
             'ID_PEMBAYARAN' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true, 'null' => false],
-            'ID_JENIS_ITEM' => ['type' => 'INT', 'constraint' => 11, 'null' => false],
             'ID_RESERVASI' => ['type' => 'INT', 'constraint' => 11, 'null' => false],
             'ID_METODE_BAYAR' => ['type' => 'INT', 'constraint' => 11, 'null' => false],
-            'ID_ITEM_TAGIHAN' => ['type' => 'INT', 'constraint' => 11, 'null' => false],
             'ID_PASIEN' => ['type' => 'INT', 'constraint' => 11, 'null' => false],
             'SUBTOTAL_TINDAKAN' => ['type' => 'FLOAT', 'constraint' => '8,2', 'null' => true],
             'SUBTOTAL_OBAT' => ['type' => 'FLOAT', 'constraint' => '8,2', 'null' => true],
@@ -223,8 +202,6 @@ class CreateClinicTables extends Migration
         $this->forge->addForeignKey('ID_RESERVASI', 'RESERVASI', 'ID_RESERVASI', 'RESTRICT', 'RESTRICT');
         $this->forge->addForeignKey('ID_PASIEN', 'PASIEN', 'ID_PASIEN', 'RESTRICT', 'RESTRICT');
         $this->forge->addForeignKey('ID_METODE_BAYAR', 'METODE_BAYAR', 'ID_METODE_BAYAR', 'RESTRICT', 'RESTRICT');
-        $this->forge->addForeignKey('ID_JENIS_ITEM', 'JENIS_ITEM', 'ID_JENIS_ITEM', 'RESTRICT', 'RESTRICT');
-        $this->forge->addForeignKey('ID_ITEM_TAGIHAN', 'ITEM_TAGIHAN', 'ID_ITEM_TAGIHAN', 'RESTRICT', 'RESTRICT');
         $this->forge->createTable('PEMBAYARAN', true);
     }
 

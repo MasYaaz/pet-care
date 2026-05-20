@@ -5,7 +5,6 @@ namespace App\Controllers\Paramedis;
 use App\Controllers\BaseController;
 use App\Models\PasienModel;
 use App\Models\ReservasiModel;
-// Kita panggil model Jadwal Dokter karena form pendaftaran butuh data shift jadwal aktif
 use App\Models\JadwalDokterModel;
 
 class Antrean extends BaseController
@@ -52,7 +51,7 @@ class Antrean extends BaseController
 
         // 2. Ambil data Jadwal Dokter yang aktif untuk dipilih di komponen <select> view
         //    (Pastikan kamu sudah memiliki JadwalDokterModel)
-        $jadwalModel = new \App\Models\JadwalDokterModel();
+        $jadwalModel = new JadwalDokterModel();
         $data['jadwal_dokter'] = $jadwalModel->select('JADWAL_DOKTER.ID_JADWAL, JADWAL_DOKTER.HARI, JADWAL_DOKTER.JAM_MULAI, JADWAL_DOKTER.JAM_SELESAI, PENGGUNA.NAMA_LENGKAP AS NAMA_DOKTER')
             ->join('DOKTER', 'DOKTER.ID_DOKTER = JADWAL_DOKTER.ID_DOKTER')
             ->join('PENGGUNA', 'PENGGUNA.ID_PENGGUNA = DOKTER.ID_PENGGUNA')
@@ -61,34 +60,57 @@ class Antrean extends BaseController
         return view('paramedis/antrean/tambah', $data);
     }
 
+    // ==========================================
+    // TAMBAHAN: Mengubah Status Reservasi / Antrean Pasien
+    // ==========================================
+    public function updateStatus($idReservasi)
+    {
+        $statusBaru = $this->request->getGet('status');
+
+        $statusValid = ['Menunggu', 'Diperiksa', 'Selesai', 'Batal'];
+        if (!in_array($statusBaru, $statusValid)) {
+            session()->setFlashdata('error', 'Status reservasi tidak valid!');
+            return redirect()->to(base_url('paramedis/antrean'));
+        }
+
+        // --- PANDUAN REVISI: Langsung tembak ambil nilainya dalam 1 baris ---
+        $idParamedis = (new \App\Models\ParamedisModel())->where('ID_PENGGUNA', session()->get('id_pengguna'))->first()['ID_PARAMEDIS'] ?? null;
+        if (!$idParamedis) {
+            session()->setFlashdata('error', 'Akun Anda tidak terdaftar sebagai Paramedis!');
+            return redirect()->to(base_url('paramedis/antrean'));
+        }
+
+        // Update data ke database
+        $this->reservasiModel->update($idReservasi, [
+            'ID_PARAMEDIS' => $idParamedis,
+            'STATUS_RESERVASI' => $statusBaru
+        ]);
+
+        session()->setFlashdata('success', 'Status reservasi berhasil diperbarui menjadi "' . $statusBaru . '".');
+        return redirect()->to(base_url('paramedis/antrean'));
+    }
+
     // Menyimpan pendaftaran antrean ke tabel RESERVASI
     public function simpan()
     {
         $idPasien = $this->request->getPost('id_pasien');
-        $idJadwal = $this->request->getPost('id_jadwal'); // Berubah dari id_dokter menjadi id_jadwal
+        $idJadwal = $this->request->getPost('id_jadwal');
         $keluhan = $this->request->getPost('keluhan');
 
-        // Ambil ID Paramedis yang sedang melayani dari data session login
         $idParamedis = session()->get('id_paramedis');
 
-        // Hitung otomatis jumlah reservasi di jadwal tersebut hari ini untuk keperluan info internal
-        $jumlahPendaftar = $this->reservasiModel->where('ID_JADWAL', $idJadwal)
-            ->where('TANGGAL_KUNJUNGAN', date('Y-m-d'))
-            ->countAllResults();
-
-        $nomorUrutBaru = $jumlahPendaftar + 1;
-
-        // Eksekusi insert sesuai dengan $allowedFields di ReservasiModel kamu
+        // Langsung insert tanpa perlu menghitung nomor antrean
         $this->reservasiModel->insert([
             'ID_PARAMEDIS' => $idParamedis,
             'ID_PASIEN' => $idPasien,
             'ID_JADWAL' => $idJadwal,
-            'TANGGAL_KUNJUNGAN' => date('Y-m-d'), // Otomatis diset hari kunjungan sekarang
-            'KELUHAN' => $keluhan,       // Disesuaikan menjadi KELUHAN (buntet sesuai model)
-            'CREATED_AT' => date('Y-m-d H:i:s')
+            'TANGGAL_KUNJUNGAN' => date('Y-m-d'),
+            'KELUHAN' => $keluhan,
+            'CREATED_AT' => date('Y-m-d H:i:s'),
+            'STATUS_RESERVASI' => 'Menunggu'
         ]);
 
-        session()->setFlashdata('success', 'Pendaftaran kunjungan ke-' . $nomorUrutBaru . ' hari ini sukses dimasukkan ke sistem.');
+        session()->setFlashdata('success', 'Pasien berhasil didaftarkan ke dalam antrean medis.');
         return redirect()->to(base_url('paramedis/antrean'));
     }
 }

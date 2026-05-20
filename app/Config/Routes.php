@@ -33,6 +33,7 @@ $routes->group('paramedis', function ($routes) {
     $routes->get('antrean/tambah', 'Paramedis\Antrean::tambah');
     $routes->post('antrean/simpan', 'Paramedis\Antrean::simpan');
 
+    $routes->get('antrean/status/(:num)', 'Paramedis\Antrean::updateStatus/$1');
     // Kasir & Billing Pembayaran
     $routes->get('kasir', 'Paramedis\Kasir::index');
 });
@@ -70,4 +71,20 @@ $routes->group('pasien', function ($routes) {
     // Menu 2: Booking Jadwal Mandiri
     $routes->get('booking', 'Pasien\Pasien::booking');
     $routes->post('booking/simpan', 'Pasien\Pasien::simpanBooking');
+});
+
+// --- Grup Navigasi Khusus Dokter Hewan (Role ID = 1) ---
+$routes->group('dokter', function ($routes) {
+    // Menu 1: Ruang Tunggu Medis (Daftar antrean pasien masuk)
+    $routes->get('ruang-tunggu', 'Dokter\Dokter::ruangTunggu');
+
+    // Menu 2: Input Rekam Medis & Tindakan
+    $routes->get('rekam-medis/periksa/(:num)', 'Dokter\Dokter::periksaPasien/$1');
+    $routes->post('rekam-medis/simpan', 'Dokter\Dokter::simpanRekamMedis');
+
+    // Menu 3: Manajemen Jadwal Praktik Mandiri (Tambahan Baru)
+    $routes->get('jadwal', 'Dokter\Dokter::jadwal');
+    $routes->get('jadwal/tambah', 'Dokter\Dokter::tambahJadwal');
+    $routes->post('jadwal/simpan', 'Dokter\Dokter::simpanJadwal');
+    $routes->get('jadwal/hapus/(:num)', 'Dokter\Dokter::hapusJadwal/$1');
 });

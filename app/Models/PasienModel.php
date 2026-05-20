@@ -17,7 +17,7 @@ class PasienModel extends Model
     {
         $builder = $this->builder();
         // REVISI: Mengambil NAMA_LENGKAP (Nama Pemilik) dan ALAMAT dari tabel PENGGUNA
-        $builder->select('PASIEN.*, PENGGUNA.USERNAME, PENGGUNA.NO_TELP, PENGGUNA.EMAIL, PENGGUNA.NAMA_LENGKAP AS NAMA_PEMILIK, PENGGUNA.ALAMAT');
+        $builder->select('PASIEN.*, PENGGUNA.USERNAME, PENGGUNA.NO_TELP, PENGGUNA.EMAIL, PENGGUNA.NAMA_LENGKAP, PENGGUNA.ALAMAT');
         $builder->join('PENGGUNA', 'PENGGUNA.ID_PENGGUNA = PASIEN.ID_PENGGUNA', 'left');
 
         if ($id !== null) {

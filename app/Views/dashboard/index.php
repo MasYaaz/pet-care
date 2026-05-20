@@ -75,16 +75,17 @@
 
     <?php if (session()->get('id_role') == 3): ?>
         <div
-            class="bg-white border border-slate-100 rounded-2xl p-8 flex flex-col sm:flex-row justify-between items-center gap-6">
-            <div class="space-y-2 text-center sm:text-left">
-                <h3 class="text-lg font-bold text-slate-900">Ingin Melakukan Check-up Berkala?</h3>
-                <p class="text-slate-400 text-xs max-w-sm">Pilih dokter andalan, tentukan hari kunjungan, dan dapatkan nomor
-                    antrean tanpa ribet.</p>
+            class="bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-6 shadow-xs">
+            <div class="space-y-1 text-center sm:text-left">
+                <h3 class="text-base font-extrabold text-slate-950 tracking-tight">Ingin Melakukan Check-up Berkala?</h3>
+                <p class="text-slate-400 text-xs max-w-sm font-medium">Pilih dokter andalan, tentukan hari kunjungan, dan
+                    dapatkan slot janji temu dari rumah tanpa ribet.</p>
             </div>
-            <button
-                class="bg-indigo-600 text-white text-xs font-bold px-6 py-4 rounded-full hover:bg-slate-950 transition-all shrink-0 uppercase tracking-wider">
+
+            <a href="<?= base_url('pasien/booking') ?>"
+                class="inline-flex items-center justify-center bg-indigo-600 text-white text-xs font-bold px-6 py-4 rounded-xl hover:bg-slate-950 transition-all shrink-0 uppercase tracking-wider shadow-sm hover:shadow-indigo-100 cursor-pointer">
                 Booking Jadwal Sekarang
-            </button>
+            </a>
         </div>
     <?php endif; ?>
 

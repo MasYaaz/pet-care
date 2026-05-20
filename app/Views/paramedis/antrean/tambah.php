@@ -1,7 +1,6 @@
 <?= $this->extend('layouts/admin') ?>
 
-<?= $this->section('title') ?>Check-in Kunjungan Baru
-<?= $this->endSection() ?>
+<?= $this->section('title') ?>Check-in Kunjungan Baru<?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
 <div class="space-y-6 max-w-2xl mx-auto">
@@ -30,9 +29,7 @@
                         <option value="" disabled selected>Cari nama anabul / nama pemilik...</option>
                         <?php foreach ($pasien as $p): ?>
                             <option value="<?= $p['ID_PASIEN'] ?>">
-                                🐾
-                                <?= esc($p['NAMA_HEWAN']) ?> — [Pemilik:
-                                <?= esc($p['NAMA_PEMILIK']) ?>]
+                                🐾 <?= esc($p['NAMA_HEWAN']) ?> — [Pemilik: <?= esc($p['NAMA_PEMILIK']) ?>]
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -48,15 +45,18 @@
                 <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">Dokter Hewan Tujuan /
                     Ruang Praktik</label>
                 <div class="relative flex items-center">
-                    <select name="id_dokter" required
+                    <select name="id_jadwal" required
                         class="w-full text-xs font-semibold px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100 outline-none transition-all appearance-none cursor-pointer text-slate-800">
-                        <option value="" disabled selected>Pilih Dokter Hewan...</option>
-                        <?php foreach ($dokter as $d): ?>
-                            <option value="<?= $d['ID_DOKTER'] ?>">
-                                <?= esc($d['NAMA_LENGKAP']) ?> (
-                                <?= esc($d['SPESIALISASI']) ?>)
+                        <option value="" disabled selected>Pilih Sesi & Dokter Hewan Aktif...</option>
+
+                        <?php foreach ($jadwal_dokter as $j): ?>
+                            <option value="<?= $j['ID_JADWAL'] ?>">
+                                👨‍⚕️ <?= esc($j['NAMA_DOKTER']) ?> — [Hari <?= esc($j['HARI']) ?>:
+                                <?= date('H:i', strtotime($j['JAM_MULAI'])) ?> -
+                                <?= date('H:i', strtotime($j['JAM_SELESAI'])) ?>]
                             </option>
                         <?php endforeach; ?>
+
                     </select>
                     <i data-lucide="chevron-down"
                         class="w-4 h-4 text-slate-400 absolute right-4 pointer-events-none"></i>
