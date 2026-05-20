@@ -10,8 +10,7 @@ class PenggunaModel extends Model
     protected $primaryKey = 'ID_PENGGUNA';
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
-    protected $allowedFields = ['ID_PENGGUNA', 'ID_ROLE', 'USERNAME', 'PASSWORD', 'EMAIL', 'NO_TELP'];
-
+    protected $allowedFields = ['ID_PENGGUNA', 'ID_ROLE', 'USERNAME', 'PASSWORD', 'EMAIL', 'NO_TELP', 'NAMA_LENGKAP', 'ALAMAT'];
     // Mendapatkan data pengguna beserta nama role-nya
     public function getPenggunaWithRole($id = null)
     {

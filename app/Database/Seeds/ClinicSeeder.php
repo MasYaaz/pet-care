@@ -13,6 +13,7 @@ class ClinicSeeder extends Seeder
             ['ID_ROLE' => 1, 'NAMA_ROLE' => 'Dokter'],
             ['ID_ROLE' => 2, 'NAMA_ROLE' => 'Paramedis'],
             ['ID_ROLE' => 3, 'NAMA_ROLE' => 'Pasien'],
+            ['ID_ROLE' => 4, 'NAMA_ROLE' => 'Admin'],
         ];
         $this->db->table('ROLE')->insertBatch($roleData);
 

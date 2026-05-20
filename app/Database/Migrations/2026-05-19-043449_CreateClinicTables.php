@@ -16,14 +16,17 @@ class CreateClinicTables extends Migration
         $this->forge->addKey('ID_ROLE', true);
         $this->forge->createTable('ROLE', true);
 
-        // 2. Table: PENGGUNA (Auto Increment)
+        // 2. Table: PENGGUNA (Auto Increment) - Pusat Data Akun
         $this->forge->addField([
             'ID_PENGGUNA' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true, 'null' => false],
             'ID_ROLE' => ['type' => 'INT', 'constraint' => 11, 'null' => true],
             'USERNAME' => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true],
-            'PASSWORD' => ['type' => 'VARCHAR', 'constraint' => 30, 'null' => true],
-            'EMAIL' => ['type' => 'VARCHAR', 'constraint' => 30, 'null' => true],
+            'PASSWORD' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            'NAMA_LENGKAP' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
+            'ALAMAT' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            'EMAIL' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
             'NO_TELP' => ['type' => 'VARCHAR', 'constraint' => 18, 'null' => true],
+
         ]);
         $this->forge->addKey('ID_PENGGUNA', true);
         $this->forge->addForeignKey('ID_ROLE', 'ROLE', 'ID_ROLE', 'RESTRICT', 'RESTRICT');
@@ -33,7 +36,6 @@ class CreateClinicTables extends Migration
         $this->forge->addField([
             'ID_DOKTER' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true, 'null' => false],
             'ID_PENGGUNA' => ['type' => 'INT', 'constraint' => 11, 'null' => false],
-            'NAMA_DOKTER' => ['type' => 'VARCHAR', 'constraint' => 60, 'null' => true],
             'SPESIALISASI' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
             'NO_STR' => ['type' => 'VARCHAR', 'constraint' => 16, 'null' => true],
         ]);
@@ -58,7 +60,6 @@ class CreateClinicTables extends Migration
         $this->forge->addField([
             'ID_PARAMEDIS' => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true, 'null' => false],
             'ID_PENGGUNA' => ['type' => 'INT', 'constraint' => 11, 'null' => false],
-            'NAMA_PARAMEDIS' => ['type' => 'VARCHAR', 'constraint' => 60, 'null' => true],
             'JABATAN' => ['type' => 'VARCHAR', 'constraint' => 30, 'null' => true],
         ]);
         $this->forge->addKey('ID_PARAMEDIS', true);
@@ -73,8 +74,6 @@ class CreateClinicTables extends Migration
             'JENIS_HEWAN' => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true],
             'RAS' => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true],
             'TGL_LAHIR' => ['type' => 'DATETIME', 'null' => true],
-            'NAMA_PEMILIK' => ['type' => 'VARCHAR', 'constraint' => 50, 'null' => true],
-            'ALAMAT' => ['type' => 'VARCHAR', 'constraint' => 60, 'null' => true],
         ]);
         $this->forge->addKey('ID_PASIEN', true);
         $this->forge->addForeignKey('ID_PENGGUNA', 'PENGGUNA', 'ID_PENGGUNA', 'RESTRICT', 'RESTRICT');

@@ -10,13 +10,13 @@ class DokterModel extends Model
     protected $primaryKey = 'ID_DOKTER';
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
-    protected $allowedFields = ['ID_DOKTER', 'ID_PENGGUNA', 'NAMA_DOKTER', 'SPESIALISASI', 'NO_STR'];
+    // REVISI: NAMA_DOKTER dihapus dari allowedFields
+    protected $allowedFields = ['ID_DOKTER', 'ID_PENGGUNA', 'SPESIALISASI', 'NO_STR'];
 
-    // Menampilkan profil dokter beserta info akun pengguna
     public function getDokterWithAkun($id = null)
     {
         $builder = $this->builder();
-        $builder->select('DOKTER.*, PENGGUNA.USERNAME, PENGGUNA.EMAIL, PENGGUNA.NO_TELP');
+        $builder->select('DOKTER.*, PENGGUNA.NAMA_LENGKAP AS NAMA_DOKTER, PENGGUNA.USERNAME, PENGGUNA.EMAIL, PENGGUNA.NO_TELP');
         $builder->join('PENGGUNA', 'PENGGUNA.ID_PENGGUNA = DOKTER.ID_PENGGUNA');
 
         if ($id !== null) {

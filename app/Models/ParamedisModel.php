@@ -10,12 +10,14 @@ class ParamedisModel extends Model
     protected $primaryKey = 'ID_PARAMEDIS';
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
-    protected $allowedFields = ['ID_PARAMEDIS', 'ID_PENGGUNA', 'NAMA_PARAMEDIS', 'JABATAN'];
+    // REVISI: NAMA_PARAMEDIS dihapus dari allowedFields
+    protected $allowedFields = ['ID_PARAMEDIS', 'ID_PENGGUNA', 'JABATAN'];
 
     public function getParamedisWithAkun($id = null)
     {
         $builder = $this->builder();
-        $builder->select('PARAMEDIS.*, PENGGUNA.USERNAME, PENGGUNA.EMAIL');
+        // REVISI: Mengambil NAMA_LENGKAP dari PENGGUNA alias sebagai NAMA_PARAMEDIS
+        $builder->select('PARAMEDIS.*, PENGGUNA.NAMA_LENGKAP AS NAMA_PARAMEDIS, PENGGUNA.USERNAME, PENGGUNA.EMAIL');
         $builder->join('PENGGUNA', 'PENGGUNA.ID_PENGGUNA = PARAMEDIS.ID_PENGGUNA');
 
         if ($id !== null) {
