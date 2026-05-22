@@ -1,21 +1,23 @@
 # PetCare - Sistem Klinik Hewan Berbasis Website
 
+![Tampilan Utama](public/assets/home.webp)
+
 ## Dokumentasi Teknis & Panduan Implementasi
 
 ---
 
 ## 📋 Daftar Isi
 
-1. [Tentang Proyek](#tentang-proyek)
-2. [Fitur Utama](#fitur-utama)
-3. [Teknologi yang Digunakan](#teknologi-yang-digunakan)
-4. [Struktur Proyek](#struktur-proyek)
-5. [Persyaratan Sistem](#persyaratan-sistem)
-6. [Cara Instalasi](#cara-instalasi)
-7. [Konfigurasi](#konfigurasi)
-8. [Panduan Penggunaan](#panduan-penggunaan)
-9. [Modul & Fitur Detail](#modul--fitur-detail)
-10. [Troubleshooting](#troubleshooting)
+1. [Tentang Proyek](#-tentang-proyek)
+2. [Fitur Utama](#-fitur-utama)
+3. [Teknologi yang Digunakan](#-teknologi-yang-digunakan)
+4. [Struktur Proyek](#-struktur-proyek)
+5. [Persyaratan Sistem](#-persyaratan-sistem)
+6. [Cara Instalasi](#-cara-instalasi)
+7. [Konfigurasi](#-konfigurasi)
+8. [Panduan Penggunaan](#-panduan-penggunaan)
+9. [Modul & Fitur Detail](#-modul--fitur-detail)
+10. [Troubleshooting](#-troubleshooting)
 
 ---
 
