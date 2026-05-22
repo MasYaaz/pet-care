@@ -78,7 +78,12 @@ class Dokter extends BaseController
     {
         $idReservasi = $this->request->getPost('id_reservasi');
         $idPasien = $this->request->getPost('id_pasien');
-        $diagnosa = $this->request->getPost('diagnosa');
+
+        // Sesuaikan penangkapan data post dengan allowedFields model (Gunakan huruf kecil/sesuai input form)
+        $diagnosa = $this->request->getPost('diagnosa') ?? $this->request->getPost('diagnosis');
+        $anamnesis = $this->request->getPost('anamnesis') ?? '-';
+        $terapi = $this->request->getPost('terapi') ?? '-';
+        $catatan = $this->request->getPost('catatan') ?? '-';
 
         // Tangkap data array dinamis dari form
         $arrIdTindakan = $this->request->getPost('id_tindakan');
@@ -110,23 +115,26 @@ class Dokter extends BaseController
         $biayaKonsul = (int) $this->request->getPost('biaya_konsultasi');
         $totalTagihan = $biayaKonsul + $subtotalTindakan + $subtotalObat;
 
-        // Lacak Paramedis Loket Asal (Fallback ke ID 1 jika booking online mandiri)
+        // Lacak Paramedis Loket Asal
         $reservasiAsal = $this->reservasiModel->find($idReservasi);
         $idParamedis = $reservasiAsal['ID_PARAMEDIS'] ?? 1;
         $idDokter = $this->getLoggedInDokterId();
 
-        // --- LANGKAH 1: Insert ke tabel REKAM_MEDIS ---
+        // --- LANGKAH 1: Insert ke tabel REKAM_MEDIS (Diselaraskan dengan Model) ---
         $this->rekamMedisModel->insert([
             'ID_RESERVASI' => $idReservasi,
             'ID_DOKTER' => $idDokter,
+            'TANGGAL_PERIKSA' => date('Y-m-d H:i:s'),
+            'ANAMNESIS' => $anamnesis,
             'DIAGNOSIS' => $diagnosa,
-            'CREATED_AT' => date('Y-m-d H:i:s')
+            'TERAPI' => $terapi,
+            'CATATAN' => $catatan
         ]);
         $idRekamBaru = $this->rekamMedisModel->getInsertID();
 
         // --- LANGKAH 2: Insert item ke tabel REKAM_TINDAKAN ---
         if (!empty($arrIdTindakan)) {
-            $rekamTindakanModel = new RekamTindakanModel();
+            $rekamTindakanModel = new \App\Models\RekamTindakanModel();
             foreach ($arrIdTindakan as $key => $idTindakan) {
                 if (!empty($idTindakan)) {
                     $rekamTindakanModel->insert([
@@ -149,8 +157,8 @@ class Dokter extends BaseController
 
         // --- LANGKAH 4: Insert detail item ke tabel DETAIL_RESEP & Potong Stok ---
         if (!empty($arrIdObat)) {
-            $detailResepModel = new DetailResepModel();
-            $obatModel = new ObatModel();
+            $detailResepModel = new \App\Models\DetailResepModel();
+            $obatModel = new \App\Models\ObatModel();
 
             foreach ($arrIdObat as $key => $idObat) {
                 if (!empty($idObat)) {
@@ -172,13 +180,11 @@ class Dokter extends BaseController
         }
 
         // --- LANGKAH 5: Buat invoice billing ke tabel PEMBAYARAN ---
-        $pembayaranModel = new PembayaranModel();
+        $pembayaranModel = new \App\Models\PembayaranModel();
         $pembayaranModel->insert([
-            'ID_JENIS_ITEM' => 1,
             'ID_RESERVASI' => $idReservasi,
             'ID_METODE_BAYAR' => 1,
             'STATUS_BAYAR' => 'Belum Bayar',
-            'ID_ITEM_TAGIHAN' => 1,
             'ID_PASIEN' => $idPasien,
             'BIAYA_KONSULTASI' => $biayaKonsul,
             'SUBTOTAL_TINDAKAN' => $subtotalTindakan,
@@ -197,7 +203,11 @@ class Dokter extends BaseController
         return redirect()->to(base_url('dokter/ruang-tunggu'));
     }
 
-    // MENU 3: Atur Jadwal Praktik Mandiri
+    // =========================================================================
+    // REVISI UTAMA: MODUL MANAGEMENT JADWAL & KUOTA PRAKTIK (CRUD MANDIRI)
+    // =========================================================================
+
+    // 1. READ: List Jadwal Praktik Dokter Terkait
     public function jadwal()
     {
         $idDokter = $this->getLoggedInDokterId();
@@ -205,11 +215,13 @@ class Dokter extends BaseController
         return view('dokter/jadwal/index', $data);
     }
 
+    // 2. CREATE (Form): Tampilan Tambah Jadwal Praktik
     public function tambahJadwal()
     {
         return view('dokter/jadwal/tambah');
     }
 
+    // 3. CREATE (Proses): Simpan Jadwal & Kuota Pasien Baru
     public function simpanJadwal()
     {
         $idDokter = $this->getLoggedInDokterId();
@@ -218,13 +230,56 @@ class Dokter extends BaseController
             'ID_DOKTER' => $idDokter,
             'HARI' => $this->request->getPost('hari'),
             'JAM_MULAI' => $this->request->getPost('jam_mulai'),
-            'JAM_SELESAI' => $this->request->getPost('jam_selesai')
+            'JAM_SELESAI' => $this->request->getPost('jam_selesai'),
+            'KUOTA' => (int) $this->request->getPost('kuota') // Mampu menangkap kuota maksimal
         ]);
 
-        session()->setFlashdata('success', 'Slot jadwal praktik baru berhasil diaktifkan.');
+        session()->setFlashdata('success', 'Slot jadwal praktik dan kuota baru berhasil diaktifkan.');
         return redirect()->to(base_url('dokter/jadwal'));
     }
 
+    // 4. UPDATE (Form): Tampilan Edit Jadwal & Kuota Praktik
+    public function editJadwal($idJadwal)
+    {
+        $idDokter = $this->getLoggedInDokterId();
+
+        // Proteksi: Ambil data jadwal hanya jika murni miliknya sendiri
+        $jadwal = $this->jadwalDokterModel->where(['ID_JADWAL' => $idJadwal, 'ID_DOKTER' => $idDokter])->first();
+
+        if (!$jadwal) {
+            session()->setFlashdata('error', 'Akses ditolak atau data jadwal tidak ditemukan.');
+            return redirect()->to(base_url('dokter/jadwal'));
+        }
+
+        $data['jadwal'] = $jadwal;
+        return view('dokter/jadwal/edit', $data);
+    }
+
+    // 5. UPDATE (Proses): Perbarui Data Jadwal Praktik & Kuota
+    public function updateJadwal($idJadwal)
+    {
+        $idDokter = $this->getLoggedInDokterId();
+
+        // Verifikasi kepemilikan sebelum melakukan pembaruan data
+        $jadwalExist = $this->jadwalDokterModel->where(['ID_JADWAL' => $idJadwal, 'ID_DOKTER' => $idDokter])->first();
+
+        if (!$jadwalExist) {
+            session()->setFlashdata('error', 'Gagal memperbarui, data tidak valid.');
+            return redirect()->to(base_url('dokter/jadwal'));
+        }
+
+        $this->jadwalDokterModel->update($idJadwal, [
+            'HARI' => $this->request->getPost('hari'),
+            'JAM_MULAI' => $this->request->getPost('jam_mulai'),
+            'JAM_SELESAI' => $this->request->getPost('jam_selesai'),
+            'KUOTA' => (int) $this->request->getPost('kuota') // Pembaruan kapasitas kuota
+        ]);
+
+        session()->setFlashdata('success', 'Perubahan slot jadwal dan kuota praktik berhasil disimpan.');
+        return redirect()->to(base_url('dokter/jadwal'));
+    }
+
+    // 6. DELETE: Nonaktifkan Slot Jadwal Praktik
     public function hapusJadwal($idJadwal)
     {
         $idDokter = $this->getLoggedInDokterId();

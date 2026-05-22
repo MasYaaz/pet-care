@@ -4,8 +4,9 @@
 
 <?= $this->section('content') ?>
 <section
-    class="max-w-6xl mx-auto px-6 pt-16 pb-24 md:pt-24 md:pb-36 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-    <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+    class="max-w-7xl mx-auto px-6 lg:pl-18 pb-24 md:pt-20 md:pb-32 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center min-h-[70vh]">
+
+    <div class="lg:col-span-6 space-y-6 text-center lg:text-left">
         <div
             class="inline-flex items-center gap-2 bg-indigo-50/60 border border-indigo-100/50 text-indigo-700 text-[11px] font-bold tracking-widest uppercase px-4 py-1.5 rounded-full">
             <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-ping"></span>
@@ -30,16 +31,23 @@
         </div>
     </div>
 
-    <div class="lg:col-span-5 hidden lg:flex justify-center relative">
+    <div class="lg:col-span-6 hidden lg:flex justify-center relative w-full h-full">
         <div
-            class="w-72 h-72 bg-gradient-to-tr from-indigo-50 to-violet-100 rounded-full blur-3xl absolute -z-10 opacity-70">
+            class="w-[450px] h-[450px] bg-gradient-to-tr from-indigo-200/50 to-violet-200/50 rounded-full blur-3xl absolute -z-10 opacity-70 animate-pulse">
         </div>
+
         <div
-            class="w-56 h-56 border border-slate-100 bg-white shadow-xl shadow-slate-100 rounded-3xl flex items-center justify-center group hover:scale-105 transition-transform duration-500">
-            <i data-lucide="shield-check"
-                class="w-24 h-24 text-indigo-500 stroke-[1.25] group-hover:text-indigo-600 transition-colors"></i>
+            class="relative w-full max-w-md h-[420px] bg-gradient-to-b from-indigo-50/40 to-slate-50/20 backdrop-blur-md border border-slate-200/60 rounded-[36px] p-6 shadow-2xl shadow-slate-200/60 flex items-end justify-center group overflow-visible transition-all duration-500 hover:scale-[1.01]">
+
+            <img src="<?= base_url('assets/kucing.webp') ?>" alt="Kucing Klinik Hewan"
+                class="w-auto h-[115%] object-contain absolute bottom-0 z-10 drop-shadow-[0_25px_25px_rgba(0,0,0,0.15)] transition-transform duration-500 group-hover:scale-[1.03]">
+
+            <div
+                class="w-72 h-72 bg-gradient-to-br from-indigo-500/10 to-violet-500/5 rounded-full absolute bottom-10 -z-10 scale-95 group-hover:scale-100 transition-transform duration-500">
+            </div>
         </div>
     </div>
+
 </section>
 
 <section id="layanan" class="border-t border-slate-100 bg-white py-24">
@@ -71,7 +79,8 @@
                         <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase block mb-0.5">Biaya
                             Terstandar:</span>
                         <p class="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Rp
-                            <?= number_format($t['HARGA'], 0, ',', '.') ?></p>
+                            <?= number_format($t['HARGA'], 0, ',', '.') ?>
+                        </p>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -100,7 +109,8 @@
                         <div>
                             <h3 class="font-bold text-slate-900 text-sm tracking-tight"><?= $jd['NAMA_DOKTER'] ?></h3>
                             <p class="text-[11px] font-semibold text-slate-400 tracking-wider uppercase mt-0.5">
-                                <?= $jd['SPESIALISASI'] ?></p>
+                                <?= $jd['SPESIALISASI'] ?>
+                            </p>
                         </div>
                     </div>
 

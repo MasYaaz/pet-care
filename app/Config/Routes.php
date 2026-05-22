@@ -22,7 +22,7 @@ $routes->group('dashboard', ['filter' => 'auth'], function ($routes) {
 // ============================================================================
 // 1. GRUP NAVIGASI OPERASIONAL: KHUSUS PARAMEDIS / STAF LOKET (ROLE ID = 2)
 // ============================================================================
-$routes->group('paramedis', function ($routes) {
+$routes->group('paramedis', ['filter' => 'auth'], function ($routes) {
     // Kelola Pasien (Hewan & Pemilik)
     $routes->get('pasien', 'Paramedis\Pasien::index');
     $routes->get('pasien/tambah', 'Paramedis\Pasien::tambah');
@@ -36,12 +36,13 @@ $routes->group('paramedis', function ($routes) {
     $routes->get('antrean/status/(:num)', 'Paramedis\Antrean::updateStatus/$1');
     // Kasir & Billing Pembayaran
     $routes->get('kasir', 'Paramedis\Kasir::index');
+    $routes->post('kasir/bayar/(:num)', 'Paramedis\Kasir::bayar/$1');
 });
 
 // ============================================================================
 // 2. GRUP NAVIGASI MANAJEMEN UTAMA: KHUSUS SUPER ADMIN (ROLE ID = 4)
 // ============================================================================
-$routes->group('admin', function ($routes) {
+$routes->group('admin', ['filter' => 'auth'], function ($routes) {
     // REVISI: Manajemen Akun Dokter dipindahkan penuh ke kendali folder Admin
     $routes->get('dokter', 'Admin\Dokter::index');
     $routes->get('dokter/tambah', 'Admin\Dokter::tambah');
@@ -54,27 +55,26 @@ $routes->group('admin', function ($routes) {
 });
 
 // --- Grup Navigasi Khusus Klien / Pemilik Hewan (Role ID = 3) ---
-$routes->group('pasien', function ($routes) {
-    // Menu 1: Profil Anabulku
+$routes->group('pasien', ['filter' => 'auth'], function ($routes) {
+    // Manajemen Profil Anabul (Pasien)
     $routes->get('anabul', 'Pasien\Pasien::anabul');
-
-    // REVISI: Tambahan rute mandiri untuk tambah hewan baru
     $routes->get('anabul/tambah', 'Pasien\Pasien::tambahAnabul');
     $routes->post('anabul/simpan', 'Pasien\Pasien::simpanAnabul');
-
-    // REVISI: Tambahan rute untuk fitur edit anabul
     $routes->get('anabul/edit/(:num)', 'Pasien\Pasien::editAnabul/$1');
     $routes->post('anabul/update/(:num)', 'Pasien\Pasien::updateAnabul/$1');
-
     $routes->get('anabul/hapus/(:num)', 'Pasien\Pasien::hapusAnabul/$1');
 
-    // Menu 2: Booking Jadwal Mandiri
+    // Alur Booking Sistem Online
     $routes->get('booking', 'Pasien\Pasien::booking');
     $routes->post('booking/simpan', 'Pasien\Pasien::simpanBooking');
+
+    // Menu Baru Rekam Medis & Invoice Kasir
+    $routes->get('riwayat-medis', 'Pasien\Pasien::riwayatMedis');
+    $routes->get('riwayat-pembayaran', 'Pasien\Pasien::riwayatPembayaran');
 });
 
 // --- Grup Navigasi Khusus Dokter Hewan (Role ID = 1) ---
-$routes->group('dokter', function ($routes) {
+$routes->group('dokter', ['filter' => 'auth'], function ($routes) {
     // Menu 1: Ruang Tunggu Medis (Daftar antrean pasien masuk)
     $routes->get('ruang-tunggu', 'Dokter\Dokter::ruangTunggu');
 
@@ -86,5 +86,7 @@ $routes->group('dokter', function ($routes) {
     $routes->get('jadwal', 'Dokter\Dokter::jadwal');
     $routes->get('jadwal/tambah', 'Dokter\Dokter::tambahJadwal');
     $routes->post('jadwal/simpan', 'Dokter\Dokter::simpanJadwal');
+    $routes->get('jadwal/edit/(:num)', 'Dokter\Dokter::editJadwal/$1');
+    $routes->post('jadwal/update/(:num)', 'Dokter\Dokter::updateJadwal/$1');
     $routes->get('jadwal/hapus/(:num)', 'Dokter\Dokter::hapusJadwal/$1');
 });

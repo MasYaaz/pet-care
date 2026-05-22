@@ -15,10 +15,14 @@ class Home extends BaseController
         // 1. Mengambil data seluruh layanan medis klinik (Tabel Master)
         $data['tindakan'] = $tindakanModel->findAll();
 
-        // 2. REVISI: Mengambil data jadwal dengan double JOIN untuk mendapatkan NAMA_LENGKAP dari tabel PENGGUNA
-        $data['jadwal_dokter'] = $jadwalModel->select('JADWAL_DOKTER.*, PENGGUNA.NAMA_LENGKAP AS NAMA_DOKTER, DOKTER.SPESIALISASI')
+        // 2. REVISI UTAMA: Tambahkan alias AS NAMA_DOKTER agar sinkron dengan View kamu
+        $data['jadwal_dokter'] = $jadwalModel->select('
+                JADWAL_DOKTER.*, 
+                PENGGUNA.NAMA_LENGKAP AS NAMA_DOKTER, 
+                DOKTER.SPESIALISASI
+            ')
             ->join('DOKTER', 'DOKTER.ID_DOKTER = JADWAL_DOKTER.ID_DOKTER')
-            ->join('PENGGUNA', 'PENGGUNA.ID_PENGGUNA = DOKTER.ID_PENGGUNA') // Hubungkan ke tabel user induk
+            ->join('PENGGUNA', 'PENGGUNA.ID_PENGGUNA = DOKTER.ID_PENGGUNA')
             ->findAll();
 
         // Render ke halaman home publik umum

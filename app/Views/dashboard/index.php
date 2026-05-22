@@ -74,18 +74,96 @@
     <?php endif; ?>
 
     <?php if (session()->get('id_role') == 3): ?>
-        <div
-            class="bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-6 shadow-xs">
-            <div class="space-y-1 text-center sm:text-left">
-                <h3 class="text-base font-extrabold text-slate-950 tracking-tight">Ingin Melakukan Check-up Berkala?</h3>
-                <p class="text-slate-400 text-xs max-w-sm font-medium">Pilih dokter andalan, tentukan hari kunjungan, dan
-                    dapatkan slot janji temu dari rumah tanpa ribet.</p>
+        <div class="space-y-6">
+            <div
+                class="bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-center gap-6 shadow-xs">
+                <div class="space-y-1 text-center sm:text-left">
+                    <h3 class="text-base font-extrabold text-slate-950 tracking-tight">Ingin Melakukan Check-up Berkala?
+                    </h3>
+                    <p class="text-slate-400 text-xs max-w-sm font-medium">Pilih dokter andalan, tentukan hari kunjungan,
+                        dan dapatkan slot janji temu dari rumah tanpa ribet.</p>
+                </div>
+
+                <a href="<?= base_url('pasien/booking') ?>"
+                    class="inline-flex items-center justify-center bg-indigo-600 text-white text-xs font-bold px-6 py-4 rounded-xl hover:bg-slate-950 transition-all shrink-0 uppercase tracking-wider shadow-sm hover:shadow-indigo-100 cursor-pointer">
+                    Booking Jadwal Sekarang
+                </a>
             </div>
 
-            <a href="<?= base_url('pasien/booking') ?>"
-                class="inline-flex items-center justify-center bg-indigo-600 text-white text-xs font-bold px-6 py-4 rounded-xl hover:bg-slate-950 transition-all shrink-0 uppercase tracking-wider shadow-sm hover:shadow-indigo-100 cursor-pointer">
-                Booking Jadwal Sekarang
-            </a>
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="calendar-clock" class="w-4 h-4 text-slate-500"></i>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Agenda Kunjungan Anabul Anda</h3>
+                </div>
+
+                <?php if (!empty($list_booking)): ?>
+                    <div class="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-xs">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead class="bg-slate-50/70 text-slate-500 font-bold border-b border-slate-100">
+                                    <tr>
+                                        <th class="px-6 py-4">Pasien Anabul</th>
+                                        <th class="px-6 py-4">Dokter Hewan</th>
+                                        <th class="px-6 py-4">Waktu Kunjungan</th>
+                                        <th class="px-6 py-4">Keluhan Utama</th>
+                                        <th class="px-6 py-4 text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-50 font-medium text-slate-700">
+                                    <?php foreach ($list_booking as $lb): ?>
+                                        <tr class="hover:bg-slate-50/50 transition-colors">
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-base">🐾</span>
+                                                    <div>
+                                                        <p class="font-bold text-slate-900"><?= esc($lb['NAMA_HEWAN']) ?></p>
+                                                        <p class="text-[10px] text-slate-400 font-normal">
+                                                            <?= esc($lb['JENIS_HEWAN']) ?> • <?= esc($lb['RAS']) ?></p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <p class="font-semibold text-slate-800"><?= esc($lb['NAMA_DOKTER']) ?></p>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <p class="text-slate-900 font-semibold">📅
+                                                    <?= date('d M Y', strtotime($lb['TANGGAL_KUNJUNGAN'])) ?></p>
+                                                <p class="text-[10px] text-slate-400 font-mono mt-0.5">🕒
+                                                    <?= substr($lb['JAM_MULAI'], 0, 5) ?> - <?= substr($lb['JAM_SELESAI'], 0, 5) ?>
+                                                    WIB</p>
+                                            </td>
+                                            <td class="px-6 py-4 max-w-xs truncate text-slate-500 font-normal">
+                                                <?= esc($lb['KELUHAN']) ?>
+                                            </td>
+                                            <td class="px-6 py-4 text-center whitespace-nowrap">
+                                                <?php
+                                                $status = $lb['STATUS_RESERVASI'];
+                                                if ($status === 'Menunggu') {
+                                                    $class = 'bg-amber-50 text-amber-700 border-amber-100';
+                                                } elseif ($status === 'Diperiksa') {
+                                                    $class = 'bg-indigo-50 text-indigo-700 border-indigo-100 animate-pulse';
+                                                } else {
+                                                    $class = 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                                                }
+                                                ?>
+                                                <span
+                                                    class="inline-block text-[10px] font-bold px-2.5 py-1 border rounded-md uppercase tracking-wider <?= $class ?>">
+                                                    <?= $status ?>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <div
+                        class="border border-dashed border-slate-200 bg-slate-50/50 rounded-3xl p-8 text-center text-slate-400">
+                        <p class="text-xs font-medium">Tidak ada jadwal pemeriksaan aktif terdekat.</p>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
     <?php endif; ?>
 

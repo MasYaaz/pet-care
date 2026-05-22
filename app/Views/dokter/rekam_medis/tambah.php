@@ -32,11 +32,35 @@
                 </h3>
 
                 <div class="space-y-1">
-                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Hasil Diagnosa
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Anamnesis / Keluhan
+                        Utama</label>
+                    <textarea name="anamnesis" rows="3" required
+                        placeholder="Tulis keluhan utama dari pemilik hewan saat datang..."
+                        class="w-full text-xs font-semibold px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 outline-none transition-all resize-none text-slate-800"><?= isset($antrean['KELUHAN']) ? esc($antrean['KELUHAN']) : '' ?></textarea>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Hasil Diagnosis
                         Penyakit</label>
-                    <textarea name="diagnosa" rows="6" required
+                    <textarea name="diagnosis" rows="4" required
                         placeholder="Tulis analisa diagnosa klinis penyakit anabul di sini..."
                         class="w-full text-xs font-semibold px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 outline-none transition-all resize-none text-slate-800"></textarea>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Terapi / Rencana
+                        Penanganan</label>
+                    <textarea name="terapi" rows="3" required
+                        placeholder="Tulis deskripsi terapi atau instruksi perawatan medis..."
+                        class="w-full text-xs font-semibold px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 outline-none transition-all resize-none text-slate-800">-</textarea>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Catatan Tambahan
+                        Dokter</label>
+                    <textarea name="catatan" rows="2"
+                        placeholder="Catatan opsional (misal: kontrol 3 hari lagi, dsb)..."
+                        class="w-full text-xs font-semibold px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 outline-none transition-all resize-none text-slate-800">-</textarea>
                 </div>
             </div>
 
@@ -53,9 +77,9 @@
                             <p class="font-bold text-slate-800">Biaya Jasa Konsultasi Dokter</p>
                             <p class="text-[10px] text-slate-400">Tarif dasar pemeriksaan umum</p>
                         </div>
-                        <input type="number" name="biaya_copy" id="biaya_konsultasi_visual" value="50000" disabled
+                        <input type="number" value="50000" disabled
                             class="w-32 text-right text-xs font-bold font-mono px-3 py-2 bg-white border border-slate-200 rounded-lg outline-none text-slate-400">
-                        <input type="hidden" name="biaya_consultation" id="biaya_konsultasi" value="50000">
+                        <input type="hidden" name="biaya_konsultasi" id="biaya_konsultasi" value="50000">
                     </div>
 
                     <div class="space-y-2">
@@ -110,7 +134,6 @@
 </div>
 
 <script>
-    // Injeksi data master PHP array ke JavaScript object
     const masterTindakan = <?= json_encode($master_tindakan) ?>;
     const masterObat = <?= json_encode($master_obat) ?>;
 
@@ -164,7 +187,7 @@
                     </button>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                    <input type="text" name="obat_dosis[]" required placeholder="Dosis (Misal: 2 x 1/2 Tab, 3 x 1 sendok)"
+                    <input type="text" name="obat_dosis[]" required placeholder="Dosis (Misal: 2 x 1/2 Tab)"
                         class="text-[11px] px-3 py-1.5 bg-white border border-slate-200 rounded-lg outline-none focus:border-indigo-500 text-slate-700">
                     <input type="text" name="obat_aturan[]" required placeholder="Aturan Pakai (Misal: Sesudah Makan)"
                         class="text-[11px] px-3 py-1.5 bg-white border border-slate-200 rounded-lg outline-none focus:border-indigo-500 text-slate-700">
@@ -196,15 +219,19 @@
 
         const rows = document.querySelectorAll('#container-tindakan > div, #container-obat > div');
         rows.forEach(row => {
-            const harga = parseInt(row.querySelector('.item-harga').value) || 0;
-            const qty = parseInt(row.querySelector('.item-qty').value) || 1;
-            total += (harga * qty);
+            const hargaInput = row.querySelector('.item-harga');
+            const qtyInput = row.querySelector('.item-qty');
+
+            if (hargaInput && qtyInput) {
+                const harga = parseInt(hargaInput.value) || 0;
+                const qty = parseInt(qtyInput.value) || 1;
+                total += (harga * qty);
+            }
         });
 
         document.getElementById('live-total').innerText = 'Rp ' + total.toLocaleString('id-ID');
     }
 
-    // Inisialisasi baris kosong pertama demi kenyamanan UX dokter
     window.addEventListener('DOMContentLoaded', () => {
         addBaris('container-tindakan', 'tindakan');
         addBaris('container-obat', 'obat');

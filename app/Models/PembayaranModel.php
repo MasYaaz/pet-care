@@ -15,7 +15,7 @@ class PembayaranModel extends Model
         'ID_JENIS_ITEM',
         'ID_RESERVASI',
         'ID_METODE_BAYAR',
-        'ID_STATUS_BAYAR',
+        'STATUS_BAYAR',
         'ID_ITEM_TAGIHAN',
         'ID_PASIEN',
         'SUBTOTAL_TINDAKAN',

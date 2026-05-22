@@ -84,7 +84,7 @@
                             <tr class="hover:bg-slate-50/50 transition-colors">
                                 <td class="px-6 py-4 text-xs font-mono font-bold text-slate-900">
                                     #INV-
-                                    <?= $bill['ID_TAGIHAN'] ?>
+                                    <?= $bill['ID_PEMBAYARAN'] ?>
                                 </td>
                                 <td class="px-6 py-4">
                                     <p class="text-sm font-bold text-slate-900">🐾
@@ -96,7 +96,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-xs font-bold text-slate-800">
                                     Rp
-                                    <?= number_format($bill['TOTAL_BAYAR'], 0, ',', '.') ?>
+                                    <?= number_format($bill['TOTAL_TAGIHAN'], 0, ',', '.') ?>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <?php if ($bill['STATUS_BAYAR'] === 'Lunas'): ?>
@@ -112,7 +112,7 @@
                                     <?php endif; ?>
                                 </td>
                                 <td class="px-6 py-4 text-center text-xs font-medium text-slate-500">
-                                    <?= $bill['METODE_BAYAR'] ? esc($bill['METODE_BAYAR']) : '—' ?>
+                                    <?= $bill['NAMA_METODE_BAYAR'] ? esc($bill['NAMA_METODE_BAYAR']) : '—' ?>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <?php if ($bill['STATUS_BAYAR'] === 'Belum Bayar'): ?>
