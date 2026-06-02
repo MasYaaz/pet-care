@@ -22,30 +22,43 @@
 
     <?php if (session()->get('id_role') == 2): ?>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center"><i
-                        data-lucide="users" class="w-5 h-5"></i></div>
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-3">
+                <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                </div>
                 <div>
                     <h3 class="text-2xl font-black text-slate-900"><?= $antrean_baru ?></h3>
                     <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Antrean Tunggu Hari Ini</p>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><i
-                        data-lucide="heart" class="w-5 h-5"></i></div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-3">
+                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                    <i data-lucide="heart" class="w-5 h-5"></i>
+                </div>
                 <div>
                     <h3 class="text-2xl font-black text-slate-900"><?= $total_pasien ?></h3>
                     <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Total Hewan Terdaftar</p>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                <div class="w-10 h-10 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center"><i
-                        data-lucide="alert-triangle" class="w-5 h-5"></i></div>
-                <div>
-                    <h3 class="text-2xl font-black text-rose-600"><?= $obat_kritis ?></h3>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Stok Farmasi Menipis</p>
+
+            <a href="<?= base_url('paramedis/obat') ?>"
+                class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-3 block hover:border-rose-300 transition-all group">
+                <div
+                    class="w-10 h-10 <?= $obat_kritis > 0 ? 'bg-rose-50 text-rose-600' : 'bg-slate-50 text-slate-400' ?> rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <i data-lucide="pill" class="w-5 h-5"></i>
                 </div>
-            </div>
+                <div>
+                    <h3 class="text-2xl font-black <?= $obat_kritis > 0 ? 'text-rose-600' : 'text-slate-900' ?>">
+                        <?= $obat_kritis ?></h3>
+                    <div class="flex items-center justify-between">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Stok Farmasi Menipis</p>
+                        <span
+                            class="text-[10px] text-indigo-600 font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">Check
+                            <i data-lucide="chevron-right" class="w-3 h-3"></i></span>
+                    </div>
+                </div>
+            </a>
         </div>
     <?php endif; ?>
 
@@ -64,8 +77,9 @@
             <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
                 <div class="space-y-2">
                     <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Tindakan Medis Selesai</p>
-                    <h3 class="text-3xl font-black text-slate-900">0 <span
-                            class="text-xs font-normal text-slate-400">Sesi</span></h3>
+                    <h3 class="text-3xl font-black text-slate-900">
+                        <?= $tindakan_selesai ?> <span class="text-xs font-normal text-slate-400">Sesi</span>
+                    </h3>
                 </div>
                 <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center"><i
                         data-lucide="check-circle" class="w-6 h-6"></i></div>
@@ -118,7 +132,8 @@
                                                     <div>
                                                         <p class="font-bold text-slate-900"><?= esc($lb['NAMA_HEWAN']) ?></p>
                                                         <p class="text-[10px] text-slate-400 font-normal">
-                                                            <?= esc($lb['JENIS_HEWAN']) ?> • <?= esc($lb['RAS']) ?></p>
+                                                            <?= esc($lb['JENIS_HEWAN']) ?> • <?= esc($lb['RAS']) ?>
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -127,10 +142,12 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <p class="text-slate-900 font-semibold">📅
-                                                    <?= date('d M Y', strtotime($lb['TANGGAL_KUNJUNGAN'])) ?></p>
+                                                    <?= date('d M Y', strtotime($lb['TANGGAL_KUNJUNGAN'])) ?>
+                                                </p>
                                                 <p class="text-[10px] text-slate-400 font-mono mt-0.5">🕒
                                                     <?= substr($lb['JAM_MULAI'], 0, 5) ?> - <?= substr($lb['JAM_SELESAI'], 0, 5) ?>
-                                                    WIB</p>
+                                                    WIB
+                                                </p>
                                             </td>
                                             <td class="px-6 py-4 max-w-xs truncate text-slate-500 font-normal">
                                                 <?= esc($lb['KELUHAN']) ?>
@@ -170,27 +187,32 @@
     <?php if (session()->get('id_role') == 4): ?>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-3">
-                <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center"><i
-                        data-lucide="stethoscope" class="w-5 h-5"></i></div>
+                <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+                    <i data-lucide="stethoscope" class="w-5 h-5"></i>
+                </div>
                 <div>
-                    <h3 class="text-2xl font-black text-slate-900"><?= $total_dokter ?? 0 ?></h3>
+                    <h3 class="text-2xl font-black text-slate-900"><?= $total_dokter ?></h3>
                     <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Dokter Hewan Aktif</p>
                 </div>
             </div>
+
             <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-3">
-                <div class="w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center"><i
-                        data-lucide="contact" class="w-5 h-5"></i></div>
+                <div class="w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center">
+                    <i data-lucide="contact" class="w-5 h-5"></i>
+                </div>
                 <div>
-                    <h3 class="text-2xl font-black text-slate-900"><?= $total_paramedis ?? 0 ?></h3>
+                    <h3 class="text-2xl font-black text-slate-900"><?= $total_paramedis ?></h3>
                     <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Paramedis / Staf Aktif</p>
                 </div>
             </div>
+
             <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-3">
-                <div class="w-10 h-10 bg-slate-50 text-slate-600 rounded-xl flex items-center justify-center"><i
-                        data-lucide="shield-check" class="w-5 h-5"></i></div>
+                <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
+                    <i data-lucide="paw-print" class="w-5 h-5"></i>
+                </div>
                 <div>
-                    <h3 class="text-2xl font-black text-slate-900"><?= $total_pengguna ?? 0 ?></h3>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Total Akun Sistem</p>
+                    <h3 class="text-2xl font-black text-slate-900"><?= $total_pasien ?></h3>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Pasien Anabul Terdaftar</p>
                 </div>
             </div>
         </div>
@@ -199,22 +221,30 @@
             <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-widest flex items-center gap-2">
                 <i data-lucide="sliders" class="w-4 h-4 text-indigo-600"></i> Kendali Cepat Arsitektur Sistem
             </h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <a href="<?= base_url('admin/dokter/tambah') ?>"
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <a href="<?= base_url('admin/dokter') ?>"
                     class="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200/60 rounded-xl hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-900 transition-all group">
                     <div
                         class="w-8 h-8 bg-white border border-slate-200 text-slate-700 rounded-lg flex items-center justify-center group-hover:border-indigo-200 group-hover:text-indigo-600">
                         <i data-lucide="user-cog" class="w-4 h-4"></i>
                     </div>
-                    <span class="text-xs font-bold">Daftarkan & Konfigurasi Dokter Baru</span>
+                    <span class="text-xs font-bold">Kelola Akun Dokter</span>
                 </a>
-                <a href="<?= base_url('admin/paramedis/tambah') ?>"
+                <a href="<?= base_url('admin/paramedis') ?>"
                     class="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200/60 rounded-xl hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-900 transition-all group">
                     <div
                         class="w-8 h-8 bg-white border border-slate-200 text-slate-700 rounded-lg flex items-center justify-center group-hover:border-indigo-200 group-hover:text-indigo-600">
-                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                        <i data-lucide="contact" class="w-4 h-4"></i>
                     </div>
-                    <span class="text-xs font-bold">Daftarkan Akun Staf Paramedis Baru</span>
+                    <span class="text-xs font-bold">Kelola Staf Paramedis</span>
+                </a>
+                <a href="<?= base_url('admin/pasien') ?>"
+                    class="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200/60 rounded-xl hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-900 transition-all group">
+                    <div
+                        class="w-8 h-8 bg-white border border-slate-200 text-slate-700 rounded-lg flex items-center justify-center group-hover:border-indigo-200 group-hover:text-indigo-600">
+                        <i data-lucide="paw-print" class="w-4 h-4"></i>
+                    </div>
+                    <span class="text-xs font-bold">Koreksi Berkas Pasien</span>
                 </a>
             </div>
         </div>

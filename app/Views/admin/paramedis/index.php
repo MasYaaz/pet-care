@@ -1,7 +1,6 @@
 <?= $this->extend('layouts/admin') ?>
 
-<?= $this->section('title') ?>Manajemen Data Paramedis
-<?= $this->endSection() ?>
+<?= $this->section('title') ?>Manajemen Data Paramedis<?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
 <div class="space-y-6">
@@ -22,9 +21,15 @@
         <div
             class="flex items-center gap-3 bg-emerald-50 border border-emerald-100 p-4 rounded-xl text-emerald-800 text-xs font-semibold">
             <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 shrink-0"></i>
-            <span>
-                <?= session()->getFlashdata('success') ?>
-            </span>
+            <span><?= session()->getFlashdata('success') ?></span>
+        </div>
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error')): ?>
+        <div
+            class="flex items-center gap-3 bg-rose-50 border border-rose-100 p-4 rounded-xl text-rose-800 text-xs font-semibold">
+            <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0"></i>
+            <span><?= session()->getFlashdata('error') ?></span>
         </div>
     <?php endif; ?>
 
@@ -33,8 +38,7 @@
             <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Staf Operasional Aktif</h3>
             <span
                 class="text-[10px] bg-indigo-50 font-extrabold px-2.5 py-1 rounded-md text-indigo-600 uppercase tracking-wide">
-                Total:
-                <?= count($list_paramedis) ?> Personel
+                Total: <?= count($list_paramedis) ?> Personel
             </span>
         </div>
 
@@ -73,22 +77,15 @@
                                             <?= strtoupper(substr($staf['NAMA_LENGKAP'], 0, 2)) ?>
                                         </div>
                                         <div>
-                                            <p class="text-sm font-bold text-slate-900">
-                                                <?= esc($staf['NAMA_LENGKAP']) ?>
-                                            </p>
-                                            <p class="text-[11px] text-slate-400 font-medium">Username: @
-                                                <?= esc($staf['USERNAME']) ?>
-                                            </p>
+                                            <p class="text-sm font-bold text-slate-900"><?= esc($staf['NAMA_LENGKAP']) ?></p>
+                                            <p class="text-[11px] text-slate-400 font-medium">Username:
+                                                @<?= esc($staf['USERNAME']) ?></p>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-xs">
-                                    <p class="font-semibold text-slate-800">
-                                        <?= esc($staf['EMAIL']) ?>
-                                    </p>
-                                    <p class="text-slate-400 mt-0.5">
-                                        <?= esc($staf['NO_TELP']) ?>
-                                    </p>
+                                    <p class="font-semibold text-slate-800"><?= esc($staf['EMAIL']) ?></p>
+                                    <p class="text-slate-400 mt-0.5"><?= esc($staf['NO_TELP']) ?></p>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="bg-teal-50 text-teal-700 text-[10px] font-bold px-2.5 py-1 rounded-md">
@@ -97,15 +94,16 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        <a href="#"
+                                        <a href="<?= base_url('admin/paramedis/edit/' . $staf['ID_PARAMEDIS']) ?>"
                                             class="w-7 h-7 bg-slate-50 text-slate-500 hover:text-indigo-600 border border-slate-200/60 rounded-md flex items-center justify-center transition-all"
                                             title="Edit Profil">
                                             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                                         </a>
-                                        <a href="#"
+                                        <a href="<?= base_url('admin/paramedis/hapus/' . $staf['ID_PARAMEDIS']) ?>"
+                                            onclick="return confirm('Apakah Anda yakin ingin menghapus akun log operasional milik <?= esc($staf['NAMA_LENGKAP']) ?> secara permanen?')"
                                             class="w-7 h-7 bg-slate-50 text-slate-500 hover:text-rose-600 border border-slate-200/60 rounded-md flex items-center justify-center transition-all"
-                                            title="Nonaktifkan Akun">
-                                            <i data-lucide="user-x" class="w-3.5 h-3.5"></i>
+                                            title="Hapus Permanen">
+                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                         </a>
                                     </div>
                                 </td>

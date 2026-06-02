@@ -16,6 +16,8 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
     </style>
+    <link rel="icon" href="<?= base_url('favicon-light.svg'); ?>" media="(prefers-color-scheme: light)">
+    <link rel="icon" href="<?= base_url('favicon-dark.svg'); ?>" media="(prefers-color-scheme: dark)">
 </head>
 
 <body class="bg-[#FAFAFA] min-h-screen flex items-center justify-center p-6 antialiased">
