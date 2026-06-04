@@ -71,9 +71,19 @@
 
                         <div class="pt-3 border-t border-slate-50 flex items-center gap-2 text-xs text-slate-400">
                             <i data-lucide="cake" class="w-4 h-4 text-slate-300"></i>
-                            <span>Lahir: <b class="text-slate-600 font-semibold">
-                                    <?= date('d M Y', strtotime($pet['TGL_LAHIR'])) ?>
-                                </b></span>
+                            <span>Lahir:
+                                <b class="text-slate-600 font-semibold">
+                                    <?php
+                                    $tgl = trim($pet['TGL_LAHIR'] ?? '');
+                                    // Cek secara presisi apakah tanggal kosong atau berisi format nol bawaan DB
+                                    if ($tgl === '' || $tgl === '0000-00-00 00:00:00') {
+                                        echo '-';
+                                    } else {
+                                        echo date('d M Y', strtotime($tgl));
+                                    }
+                                    ?>
+                                </b>
+                            </span>
                         </div>
                     </div>
                     <div class="bg-slate-50/50 p-4 border-t border-slate-50 flex justify-between items-center gap-2">

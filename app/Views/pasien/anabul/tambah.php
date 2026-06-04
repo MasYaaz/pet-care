@@ -57,8 +57,10 @@
             <div class="space-y-1">
                 <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">Tanggal Lahir
                     (Perkiraan)</label>
-                <input type="date" name="tgl_lahir" max="<?= date('Y-m-d') ?>" required
-                    class="w-full text-xs font-semibold px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all text-slate-800">
+                <input type="date" name="tgl_lahir" max="<?= date('Y-m-d') ?>
+                    class=" w-full text-xs font-semibold px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl
+                    focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none
+                    transition-all text-slate-800">
             </div>
 
             <div class="flex justify-end items-center gap-3 pt-3 border-t border-slate-50">

@@ -90,8 +90,13 @@
                 </p>
 
                 <a href="<?= base_url('dokter/ruang-tunggu') ?>"
-                    class="flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all <?= (url_is('dokter/ruang-tunggu*') || url_is('dokter/rekam-medis*')) ? 'text-indigo-600 bg-indigo-50' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' ?>">
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all <?= (url_is('dokter/ruang-tunggu*') || url_is('dokter/rekam-medis/periksa*')) ? 'text-indigo-600 bg-indigo-50' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' ?>">
                     <i data-lucide="stethoscope" class="w-4 h-4"></i> Ruang Tunggu Medis
+                </a>
+
+                <a href="<?= base_url('dokter/riwayat-medis') ?>"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all <?= (url_is('dokter/riwayat-medis*') || url_is('dokter/rekam-medis/edit*')) ? 'text-indigo-600 bg-indigo-50' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' ?>">
+                    <i data-lucide="folder-heart" class="w-4 h-4"></i> Riwayat Rekam Medis
                 </a>
 
                 <a href="<?= base_url('dokter/jadwal') ?>"

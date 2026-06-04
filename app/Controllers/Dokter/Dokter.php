@@ -134,7 +134,7 @@ class Dokter extends BaseController
 
         // --- LANGKAH 2: Insert item ke tabel REKAM_TINDAKAN ---
         if (!empty($arrIdTindakan)) {
-            $rekamTindakanModel = new \App\Models\RekamTindakanModel();
+            $rekamTindakanModel = new RekamTindakanModel();
             foreach ($arrIdTindakan as $key => $idTindakan) {
                 if (!empty($idTindakan)) {
                     $rekamTindakanModel->insert([
@@ -157,8 +157,8 @@ class Dokter extends BaseController
 
         // --- LANGKAH 4: Insert detail item ke tabel DETAIL_RESEP & Potong Stok ---
         if (!empty($arrIdObat)) {
-            $detailResepModel = new \App\Models\DetailResepModel();
-            $obatModel = new \App\Models\ObatModel();
+            $detailResepModel = new DetailResepModel();
+            $obatModel = new ObatModel();
 
             foreach ($arrIdObat as $key => $idObat) {
                 if (!empty($idObat)) {
@@ -180,7 +180,7 @@ class Dokter extends BaseController
         }
 
         // --- LANGKAH 5: Buat invoice billing ke tabel PEMBAYARAN ---
-        $pembayaranModel = new \App\Models\PembayaranModel();
+        $pembayaranModel = new PembayaranModel();
         $pembayaranModel->insert([
             'ID_RESERVASI' => $idReservasi,
             'ID_METODE_BAYAR' => 1,
@@ -201,6 +201,192 @@ class Dokter extends BaseController
 
         session()->setFlashdata('success', 'Rekam medis, item tindakan, resep, dan tagihan kasir berhasil disinkronkan.');
         return redirect()->to(base_url('dokter/ruang-tunggu'));
+    }
+
+    // =========================================================================
+    // BARU: MODUL RIWAYAT REKAM MEDIS & EDIT REKAM MEDIS
+    // =========================================================================
+
+    // 1. READ: Daftar Semua Riwayat Medis yang Pernah Ditangani oleh Dokter Ini
+    public function riwayatMedis()
+    {
+        $idDokter = $this->getLoggedInDokterId();
+
+        $data['list_riwayat'] = $this->rekamMedisModel->select('
+                REKAM_MEDIS.*, 
+                PASIEN.NAMA_HEWAN, PASIEN.JENIS_HEWAN,
+                P_PEMILIK.NAMA_LENGKAP AS NAMA_PEMILIK
+            ')
+            ->join('RESERVASI', 'RESERVASI.ID_RESERVASI = REKAM_MEDIS.ID_RESERVASI')
+            ->join('PASIEN', 'PASIEN.ID_PASIEN = RESERVASI.ID_PASIEN')
+            ->join('PENGGUNA AS P_PEMILIK', 'P_PEMILIK.ID_PENGGUNA = PASIEN.ID_PENGGUNA')
+            ->where('REKAM_MEDIS.ID_DOKTER', $idDokter)
+            ->orderBy('REKAM_MEDIS.TANGGAL_PERIKSA', 'DESC')
+            ->findAll();
+
+        return view('dokter/rekam_medis/riwayat', $data);
+    }
+
+    // 2. UPDATE (Form): Tampilan Mengubah Data Diagnosa & Resep Lama (PROTECTED STATUS_BAYAR)
+    public function editRekamMedis($idRekam)
+    {
+        $idDokter = $this->getLoggedInDokterId();
+
+        // Ambil rekam medis dengan proteksi kepemilikan dokter
+        $rekam = $this->rekamMedisModel->select('REKAM_MEDIS.*, PASIEN.NAMA_HEWAN, RESERVASI.ID_PASIEN, RESERVASI.ID_RESERVASI')
+            ->join('RESERVASI', 'RESERVASI.ID_RESERVASI = REKAM_MEDIS.ID_RESERVASI')
+            ->join('PASIEN', 'PASIEN.ID_PASIEN = RESERVASI.ID_PASIEN')
+            ->where(['ID_REKAM' => $idRekam, 'ID_DOKTER' => $idDokter])
+            ->first();
+
+        if (!$rekam) {
+            session()->setFlashdata('error', 'Data rekam medis tidak ditemukan atau akses ditolak.');
+            return redirect()->to(base_url('dokter/riwayat-medis'));
+        }
+
+        // KUNCI PROTEKSI 1: Cek apakah invoice tagihan ini sudah lunas di kasir
+        $pembayaranModel = new PembayaranModel();
+        $pembayaran = $pembayaranModel->where('ID_RESERVASI', $rekam['ID_RESERVASI'])->first();
+
+        if ($pembayaran && trim(strtolower($pembayaran['STATUS_BAYAR'])) === 'lunas') {
+            session()->setFlashdata('error', 'Akses ditolak! Rekam medis tidak dapat diubah karena tagihan kasir sudah berstatus LUNAS.');
+            return redirect()->to(base_url('dokter/riwayat-medis'));
+        }
+
+        $data['rekam'] = $rekam;
+
+        // Ambil tindakan & obat yang terdaftar di rekam medis ini sebelumnya
+        $data['current_tindakan'] = (new RekamTindakanModel())->where('ID_REKAM', $idRekam)->findAll();
+
+        $resep = $this->resepObatModel->where('ID_REKAM', $idRekam)->first();
+        $data['current_obat'] = $resep ? (new DetailResepModel())->where('ID_RESEP_OBAT', $resep['ID_RESEP_OBAT'])->findAll() : [];
+
+        // Master data dropdown
+        $data['master_tindakan'] = (new TindakanModel())->findAll();
+        $data['master_obat'] = (new ObatModel())->findAll();
+
+        return view('dokter/rekam_medis/edit', $data);
+    }
+
+    // 3. UPDATE (Proses): Sinkronisasi Perubahan & Re-Kalkulasi (PROTECTED STATUS_BAYAR)
+    public function updateRekamMedis($idRekam)
+    {
+        $idDokter = $this->getLoggedInDokterId();
+
+        $rekamExist = $this->rekamMedisModel->where(['ID_REKAM' => $idRekam, 'ID_DOKTER' => $idDokter])->first();
+        if (!$rekamExist) {
+            session()->setFlashdata('error', 'Gagal memperbarui, data tidak valid.');
+            return redirect()->to(base_url('dokter/riwayat-medis'));
+        }
+
+        $idReservasi = $rekamExist['ID_RESERVASI'];
+        $pembayaranModel = new PembayaranModel();
+
+        // KUNCI PROTEKSI 2: Validasi ganda di sisi backend saat proses submit data
+        $pembayaran = $pembayaranModel->where('ID_RESERVASI', $idReservasi)->first();
+        if ($pembayaran && trim(strtolower($pembayaran['STATUS_BAYAR'])) === 'lunas') {
+            session()->setFlashdata('error', 'Gagal menyimpan perubahan! Transaksi keuangan untuk rekam medis ini sudah dikunci karena sudah dibayar.');
+            return redirect()->to(base_url('dokter/riwayat-medis'));
+        }
+
+        // Ambil model pembantu lainnya
+        $rekamTindakanModel = new RekamTindakanModel();
+        $detailResepModel = new DetailResepModel();
+        $obatModel = new ObatModel();
+
+        // Ambil post input data medis
+        $this->rekamMedisModel->update($idRekam, [
+            'ANAMNESIS' => $this->request->getPost('anamnesis') ?? '-',
+            'DIAGNOSIS' => $this->request->getPost('diagnosa') ?? $this->request->getPost('diagnosis'),
+            'TERAPI' => $this->request->getPost('terapi') ?? '-',
+            'CATATAN' => $this->request->getPost('catatan') ?? '-'
+        ]);
+
+        // --- MANAJEMEN ULANG TINDAKAN ---
+        $rekamTindakanModel->where('ID_REKAM', $idRekam)->delete();
+
+        $arrIdTindakan = $this->request->getPost('id_tindakan');
+        $arrTindakanQty = $this->request->getPost('tindakan_qty');
+        $arrTindakanHarga = $this->request->getPost('tindakan_harga');
+
+        $subtotalTindakan = 0;
+        if (!empty($arrIdTindakan)) {
+            foreach ($arrIdTindakan as $key => $idTindakan) {
+                if (!empty($idTindakan)) {
+                    $rekamTindakanModel->insert([
+                        'ID_TINDAKAN' => $idTindakan,
+                        'ID_REKAM' => $idRekam,
+                        'HARGA_SAAT_ITU' => (int) $arrTindakanHarga[$key],
+                        'JUMLAH_TINDAKAN' => (int) $arrTindakanQty[$key]
+                    ]);
+                    $subtotalTindakan += ((int) $arrTindakanHarga[$key] * (int) $arrTindakanQty[$key]);
+                }
+            }
+        }
+
+        // --- MANAJEMEN ULANG OBAT & RESTOCK ---
+        $resepHeader = $this->resepObatModel->where('ID_REKAM', $idRekam)->first();
+        if ($resepHeader) {
+            $oldDetails = $detailResepModel->where('ID_RESEP_OBAT', $resepHeader['ID_RESEP_OBAT'])->findAll();
+            foreach ($oldDetails as $old) {
+                $obatModel->where('ID_OBAT', $old['ID_OBAT'])
+                    ->set('STOK', "STOK + " . (int) $old['JUMLAH_RESEP'], false)
+                    ->update();
+            }
+            $detailResepModel->where('ID_RESEP_OBAT', $resepHeader['ID_RESEP_OBAT'])->delete();
+            $idResep = $resepHeader['ID_RESEP_OBAT'];
+        } else {
+            $reservasiAsal = $this->reservasiModel->find($idReservasi);
+            $this->resepObatModel->insert([
+                'ID_REKAM' => $idRekam,
+                'ID_PARAMEDIS' => $reservasiAsal['ID_PARAMEDIS'] ?? 1,
+                'TANGGAL_RESEP' => date('Y-m-d')
+            ]);
+            $idResep = $this->resepObatModel->getInsertID();
+        }
+
+        $arrIdObat = $this->request->getPost('id_obat');
+        $arrObatQty = $this->request->getPost('obat_qty');
+        $arrObatHarga = $this->request->getPost('obat_harga');
+        $arrObatDosis = $this->request->getPost('obat_dosis');
+        $arrObatAturan = $this->request->getPost('obat_aturan');
+
+        $subtotalObat = 0;
+        if (!empty($arrIdObat)) {
+            foreach ($arrIdObat as $key => $idObat) {
+                if (!empty($idObat)) {
+                    $detailResepModel->insert([
+                        'ID_RESEP_OBAT' => $idResep,
+                        'ID_OBAT' => $idObat,
+                        'DOSIS' => $arrObatDosis[$key],
+                        'ATURAN_PAKAI' => $arrObatAturan[$key],
+                        'HARGA_TERCATAT' => (int) $arrObatHarga[$key],
+                        'JUMLAH_RESEP' => (int) $arrObatQty[$key]
+                    ]);
+
+                    $obatModel->where('ID_OBAT', $idObat)
+                        ->set('STOK', "STOK - " . (int) $arrObatQty[$key], false)
+                        ->update();
+
+                    $subtotalObat += ((int) $arrObatHarga[$key] * (int) $arrObatQty[$key]);
+                }
+            }
+        }
+
+        // --- RE-KALKULASI FINANSIAL INVOICE KASIR ---
+        if ($pembayaran) {
+            $biayaKonsul = (int) $pembayaran['BIAYA_KONSULTASI'];
+            $totalTagihanBaru = $biayaKonsul + $subtotalTindakan + $subtotalObat;
+
+            $pembayaranModel->update($pembayaran['ID_PEMBAYARAN'], [
+                'SUBTOTAL_TINDAKAN' => $subtotalTindakan,
+                'SUBTOTAL_OBAT' => $subtotalObat,
+                'TOTAL_TAGIHAN' => $totalTagihanBaru
+            ]);
+        }
+
+        session()->setFlashdata('success', 'Perubahan berkas rekam medis dan penyesuaian logistik obat berhasil diperbarui.');
+        return redirect()->to(base_url('dokter/riwayat-medis'));
     }
 
     // =========================================================================

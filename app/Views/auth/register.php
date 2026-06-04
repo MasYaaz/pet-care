@@ -109,8 +109,19 @@
                     <div class="space-y-1.5">
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Jenis
                             Hewan</label>
-                        <input type="text" name="jenis_hewan" required placeholder="Contoh: Kucing, Anjing"
-                            class="w-full bg-slate-50 text-slate-900 text-xs font-medium px-4 py-3 rounded-xl border border-slate-200/60 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all">
+                        <div class="relative flex items-center">
+                            <select name="jenis_hewan" required
+                                class="w-full text-xs font-semibold px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all appearance-none cursor-pointer text-slate-800">
+                                <option value="" disabled selected>Pilih Jenis...</option>
+                                <option value="Kucing">Kucing</option>
+                                <option value="Anjing">Anjing</option>
+                                <option value="Kelinci">Kelinci</option>
+                                <option value="Burung">Burung</option>
+                                <option value="Reptil/Eksotis">Reptil/Eksotis</option>
+                            </select>
+                            <i data-lucide="chevron-down"
+                                class="w-4 h-4 text-slate-400 absolute right-4 pointer-events-none"></i>
+                        </div>
                     </div>
 
                     <div class="space-y-1.5">
@@ -123,7 +134,7 @@
                     <div class="space-y-1.5">
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tanggal Lahir
                             Hewan</label>
-                        <input type="date" name="tgl_lahir" required
+                        <input type="date" name="tgl_lahir"
                             class="w-full bg-slate-50 text-slate-900 text-xs font-medium px-4 py-3 rounded-xl border border-slate-200/60 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all">
                     </div>
                 </div>
@@ -138,7 +149,7 @@
         </form>
 
         <div class="text-center">
-            <p class="text-xs text-slate-400">Sudah punya akun pasien? <a href="<?= base_url('auth/login') ?>"
+            <p class="text-xs text-slate-400">Sudah punya akun pasien? <a href="<?= base_url('login') ?>"
                     class="text-indigo-600 font-bold hover:underline">Masuk Portal</a></p>
         </div>
     </div>

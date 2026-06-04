@@ -126,6 +126,9 @@ $routes->group('dokter', ['filter' => 'auth'], function ($routes) {
     // Lembar Kerja Hasil Diagnosa, Input Tindakan, Resep & Potong Stok Otomatis
     $routes->get('rekam-medis/periksa/(:num)', 'Dokter\Dokter::periksaPasien/$1');
     $routes->post('rekam-medis/simpan', 'Dokter\Dokter::simpanRekamMedis');
+    $routes->get('riwayat-medis', 'Dokter\Dokter::riwayatMedis');
+    $routes->get('rekam-medis/edit/(:num)', 'Dokter\Dokter::editRekamMedis/$1');
+    $routes->post('rekam-medis/update/(:num)', 'Dokter\Dokter::updateRekamMedis/$1');
 
     // Pengaturan Mandiri Sesi Sifat Kunjungan & Jam Praktik Kerja
     $routes->get('jadwal', 'Dokter\Dokter::jadwal');

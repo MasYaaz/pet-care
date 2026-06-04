@@ -69,6 +69,16 @@
                 class="w-full bg-slate-950 hover:bg-indigo-600 text-white text-xs font-bold tracking-wider uppercase py-4 rounded-xl shadow-md transition-all duration-300 cursor-pointer mt-2">
                 Masuk Sistem
             </button>
+
+            <div class="text-center pt-2 border-t border-slate-50">
+                <p class="text-[11px] text-slate-400 font-medium">
+                    Belum mendaftarkan peliharaan Anda?
+                    <a href="<?= base_url('register') ?>"
+                        class="text-indigo-600 hover:text-indigo-700 font-bold ml-1 transition-colors">
+                        Daftar Akun Baru
+                    </a>
+                </p>
+            </div>
         </form>
 
         <div class="text-center">
