@@ -89,6 +89,9 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     $routes->get('pasien/edit/(:num)', 'Admin\Pasien::edit/$1');
     $routes->post('pasien/update/(:num)', 'Admin\Pasien::update/$1');
     $routes->get('pasien/hapus/(:num)', 'Admin\Pasien::hapus/$1');
+
+    $routes->get('laporan', 'Admin\Laporan::index');
+    $routes->get('laporan/exportExcel', 'Admin\Laporan::exportExcel');
 });
 
 

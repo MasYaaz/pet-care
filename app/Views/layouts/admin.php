@@ -83,6 +83,14 @@
                     class="flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all <?= url_is('admin/paramedis*') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' ?>">
                     <i data-lucide="contact" class="w-4 h-4"></i> Kelola Akun Paramedis
                 </a>
+
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-4 mt-6 mb-2">Eksekutif &
+                    Finansial</p>
+
+                <a href="<?= base_url('admin/laporan') ?>"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all <?= url_is('admin/laporan*') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' ?>">
+                    <i data-lucide="trending-up" class="w-4 h-4"></i> Laporan & Analisis Klinik
+                </a>
             <?php endif; ?>
 
             <?php if (session()->get('id_role') == 1): ?>

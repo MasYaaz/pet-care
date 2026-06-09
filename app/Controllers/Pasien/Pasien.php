@@ -162,8 +162,10 @@ class Pasien extends BaseController
     public function riwayatMedis()
     {
         $idPengguna = session()->get('id_pengguna');
+        $db = \Config\Database::connect();
 
-        $data['riwayat_medis'] = $this->rekamMedisModel->select('
+        // LANGKAH 1: Ambil data induk rekam medis seperti biasa (Query milikmu)
+        $list_riwayat = $this->rekamMedisModel->select('
                 REKAM_MEDIS.*, 
                 PASIEN.NAMA_HEWAN, PASIEN.JENIS_HEWAN, 
                 P_DOKTER.NAMA_LENGKAP AS NAMA_DOKTER
@@ -172,9 +174,24 @@ class Pasien extends BaseController
             ->join('PASIEN', 'PASIEN.ID_PASIEN = RESERVASI.ID_PASIEN')
             ->join('DOKTER', 'DOKTER.ID_DOKTER = REKAM_MEDIS.ID_DOKTER')
             ->join('PENGGUNA AS P_DOKTER', 'P_DOKTER.ID_PENGGUNA = DOKTER.ID_PENGGUNA')
-            ->where('PASIEN.ID_PENGGUNA', $idPengguna) // Proteksi: Hanya anabul miliknya sendiri
+            ->where('PASIEN.ID_PENGGUNA', $idPengguna)
             ->orderBy('REKAM_MEDIS.TANGGAL_PERIKSA', 'DESC')
             ->findAll();
+
+        // LANGKAH 2: Looping untuk menyuntikkan daftar detail resep obat secara spesifik
+        if (!empty($list_riwayat)) {
+            foreach ($list_riwayat as $key => $rm) {
+                // Cari item obat berdasarkan relasi ID_REKAM melalui header RESEP_OBAT ke DETAIL_RESEP
+                $list_riwayat[$key]['daftar_obat'] = $db->table('DETAIL_RESEP')
+                    ->select('DETAIL_RESEP.DOSIS, DETAIL_RESEP.ATURAN_PAKAI, DETAIL_RESEP.JUMLAH_RESEP, OBAT.NAMA_OBAT')
+                    ->join('RESEP_OBAT', 'RESEP_OBAT.ID_RESEP_OBAT = DETAIL_RESEP.ID_RESEP_OBAT')
+                    ->join('OBAT', 'OBAT.ID_OBAT = DETAIL_RESEP.ID_OBAT')
+                    ->where('RESEP_OBAT.ID_REKAM', $rm['ID_REKAM'])
+                    ->get()->getResultArray();
+            }
+        }
+
+        $data['riwayat_medis'] = $list_riwayat;
 
         return view('pasien/riwayat_medis/index', $data);
     }

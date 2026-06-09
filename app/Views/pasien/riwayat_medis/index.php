@@ -63,6 +63,40 @@
                                     <?= esc($rm['DIAGNOSIS']) ?>
                                 </div>
                             </div>
+
+                            <div class="space-y-2 pt-1">
+                                <label
+                                    class="text-[10px] font-bold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
+                                    <i data-lucide="pill" class="w-3.5 h-3.5 text-indigo-500"></i>
+                                    Resep Obat & Aturan Pakai
+                                </label>
+
+                                <?php if (!empty($rm['daftar_obat'])): ?>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        <?php foreach ($rm['daftar_obat'] as $obat): ?>
+                                            <div class="p-3 bg-slate-50/60 border border-slate-100 rounded-xl flex items-start gap-2.5">
+                                                <span class="text-sm leading-none mt-0.5">💊</span>
+                                                <div>
+                                                    <p class="font-bold text-slate-900">
+                                                        <?= esc($obat['NAMA_OBAT']) ?>
+                                                        <span
+                                                            class="text-slate-400 font-normal text-[10px] ml-0.5">(<?= $obat['JUMLAH_RESEP'] ?>
+                                                            Pcs)</span>
+                                                    </p>
+                                                    <p class="text-slate-500 text-[10px] mt-1 font-medium leading-normal">
+                                                        Dosis: <?= esc($obat['DOSIS']) ?> —
+                                                        <span class="text-indigo-600 font-bold"><?= esc($obat['ATURAN_PAKAI']) ?></span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php else: ?>
+                                    <p class="text-[11px] text-slate-400 font-normal italic pl-1">Tidak ada resep obat atau vitamin
+                                        untuk tindakan medis kunjungan ini.</p>
+                                <?php endif; ?>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -73,7 +107,7 @@
                         class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center border border-slate-100 text-slate-400">
                         <i data-lucide="heart-pulse" class="w-5 h-5 text-indigo-500"></i>
                     </div>
-                    <p class="text-xs font-bold text-slate-500">Belum Ada Catatan Klinis</p>
+                    <p class="text-xs font-bold text-slate-500">Belum Anda Catatan Klinis</p>
                     <p class="text-[11px] text-slate-400 font-normal">Riwayat rekam medis anabul Anda akan terbit di sini
                         setelah diperiksa dokter.</p>
                 </div>
